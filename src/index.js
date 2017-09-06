@@ -8,5 +8,8 @@ new Vue({
   el: '#app',
   components: {
     chatter
+  },
+  data: {
+    message: 'Hi'
   }
 });

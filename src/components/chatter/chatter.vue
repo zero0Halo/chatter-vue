@@ -8,22 +8,20 @@
         </div>
 
         <pre class="m-2">
-          {
-            "iam": "waiting"
-          }
+          {{ output }}
         </pre>
       </div>
     </div>
 
     <div class="row p-2">
       <div class="col-12">
-        <input type="text" class="form-control" value="Hey @bob and @joe, you're going to (flip) when you check out http://www.cnn.com and http://www.theverge.com">
+        <input type="text" class="form-control" v-model="message">
       </div>
     </div>
 
     <div class="row p-2">
       <div class="col-12">
-        <button class="form-control btn btn-success">
+        <button class="form-control btn btn-success" @click="textSubmit">
           Enter
         </button>
       </div>

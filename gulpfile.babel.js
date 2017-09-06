@@ -6,8 +6,9 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var sass = require('gulp-sass');
 var autoPrefixer = require('gulp-autoprefixer');
+var connect = require('gulp-connect');
 
-gulp.task('default', function() {
+gulp.task('browserify', function() {
   const BUNDLE = 'index-bundle.js';
   const SRC = './src/index.js';
   const DEST = './dev';
@@ -22,8 +23,9 @@ gulp.task('default', function() {
     .pipe(source(BUNDLE))
     .pipe(buffer())
     .pipe(gulp.dest(DEST))
-    // .pipe(connect.reload())
+    .pipe(connect.reload())
 });
+
 
 
 gulp.task('sass', function () {
@@ -34,45 +36,21 @@ gulp.task('sass', function () {
     .pipe(sass().on('error', sass.logError))
     .pipe(autoPrefixer({ browsers: ['last 2 versions', '>5%'] }))
     .pipe(gulp.dest(DEST))
-    // .pipe(connect.reload());
+    .pipe(connect.reload());
 });
 
 
 
-// gulp.task('vueify', () => {
-//   return gulp.src('./src/components/**/*.vue')
-//     .pipe(vueify())
-//     .pipe(gulp.dest('./dev'));
-// });
-//
-// gulp.task('connect', function() {
-//   connect.server({
-//     root: DEV,
-//     livereload: true
-//   });
-// });
-//
-// gulp.task('watch', () => {
-//   gulp.watch('./src/components/**.*', ['vueify']);
-// });
+gulp.task('connect', function() {
+  connect.server({
+    root: './dev',
+    livereload: true
+  });
+});
 
 
-
-
-
-// gulp.task('browserify', function() {
-//   const BUNDLE = 'index.js';
-//   const SRC = './src/components/**.*';
-//
-//   const B = browserify({
-//     entries: SRC,
-//     debug: true,
-//     transform: ['vueify', 'babelify']
-//   });
-//
-//   return B.bundle()
-//     .pipe(source(BUNDLE))
-//     .pipe(buffer())
-//     .pipe(gulp.dest('./dev'))
-//     .pipe(connect.reload())
-// });
+gulp.task('default', ['connect', 'sass', 'browserify'], () => {
+  gulp.watch('./src/components/**/*.*', ['browserify']);
+  gulp.watch('./src/index.js', ['browserify']);
+  gulp.watch('./src/index.scss', ['sass']);
+});
