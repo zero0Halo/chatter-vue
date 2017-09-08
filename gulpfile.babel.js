@@ -7,50 +7,119 @@ var buffer = require('vinyl-buffer');
 var sass = require('gulp-sass');
 var autoPrefixer = require('gulp-autoprefixer');
 var connect = require('gulp-connect');
-
-gulp.task('browserify', function() {
-  const BUNDLE = 'index-bundle.js';
-  const SRC = './src/index.js';
-  const DEST = './dev';
-
-  let B = browserify({
-    entries: SRC,
-    debug: true,
-    transform: ['vueify', 'babelify']
-  });
-
-  return B.bundle()
-    .pipe(source(BUNDLE))
-    .pipe(buffer())
-    .pipe(gulp.dest(DEST))
-    .pipe(connect.reload())
-});
+var minify = require('gulp-minify');
 
 
 
-gulp.task('sass', function () {
-  var SRC = './src/index.scss';
-  var DEST = './dev';
+/**
+ * [DEVELOPMENT TASKS]
+ *
+ *  These tasks are used purely for active development. All generated files are located in the 'dev' folder.
+ *
+ *  All files are unminified, and include sourcemaps.
+ */
 
-  return gulp.src(SRC)
-    .pipe(sass().on('error', sass.logError))
-    .pipe(autoPrefixer({ browsers: ['last 2 versions', '>5%'] }))
-    .pipe(gulp.dest(DEST))
-    .pipe(connect.reload());
-});
+    // Convert es6 to es5, convert .vue files into useable code
+    gulp.task('dev:browserify', function() {
+      const BUNDLE = 'index-bundle.js';
+      const SRC = './src/index.js';
+      const DEST = './dev';
+
+      let B = browserify({
+        entries: SRC,
+        debug: true,
+        transform: ['vueify', 'babelify']
+      });
+
+      return B.bundle()
+        .pipe(source(BUNDLE))
+        .pipe(buffer())
+        .pipe(gulp.dest(DEST))
+        .pipe(connect.reload())
+    });
+
+    // Convert sass to css
+    gulp.task('dev:sass', function () {
+      var SRC = './src/index.scss';
+      var DEST = './dev';
+
+      return gulp.src(SRC)
+        .pipe(sass().on('error', sass.logError))
+        .pipe(autoPrefixer({ browsers: ['last 2 versions', '>5%'] }))
+        .pipe(gulp.dest(DEST))
+        .pipe(connect.reload());
+    });
+
+    // Start a server pointing at the dev folder
+    gulp.task('dev:connect', function() {
+      connect.server({
+        root: './dev',
+        livereload: true
+      });
+    });
+
+    // Default task for gulp is dev mode
+    gulp.task('default', ['dev:connect', 'dev:sass', 'dev:browserify'], () => {
+      gulp.watch('./src/components/**/*.*', ['dev:browserify']);
+      gulp.watch('./src/index.js', ['dev:browserify']);
+      gulp.watch('./src/index.scss', ['dev:sass']);
+    });
 
 
 
-gulp.task('connect', function() {
-  connect.server({
-    root: './dev',
-    livereload: true
-  });
-});
+/**
+ * [DISTRIBUTION TASKS]
+ *
+ *  These tasks are used to prepare the project for distribution.
+ *
+ *  These files are minified and without sourcemaps.
+ *  A server is spun up to view the project to verify there are no errors.
+ */
+
+    // Convert es6 to es5, convert .vue files into useable code
+    gulp.task('dist:browserify', function() {
+      const BUNDLE = 'index-bundle.js';
+      const SRC = './src/index.js';
+      const DEST = './dist';
+
+      let B = browserify({
+        entries: SRC,
+        debug: false,
+        transform: ['vueify', 'babelify']
+      });
+
+      return B.bundle()
+        .pipe(source(BUNDLE))
+        .pipe(buffer())
+        .pipe(gulp.dest(DEST))
+        .pipe(connect.reload())
+    });
 
 
-gulp.task('default', ['connect', 'sass', 'browserify'], () => {
-  gulp.watch('./src/components/**/*.*', ['browserify']);
-  gulp.watch('./src/index.js', ['browserify']);
-  gulp.watch('./src/index.scss', ['sass']);
-});
+    // Convert sass to css
+    gulp.task('dist:sass', function () {
+      var SRC = './src/index.scss';
+      var DEST = './dist';
+
+      return gulp.src(SRC)
+        .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+        .pipe(autoPrefixer({ browsers: ['last 2 versions', '>5%'] }))
+        .pipe(gulp.dest(DEST))
+        .pipe(connect.reload());
+    });
+
+
+    // Start a server pointing at the dist folder
+    gulp.task('dist:connect', function() {
+      connect.server({
+        root: './dist',
+        livereload: true
+      });
+    });
+
+    // Watch for changes and update the dist files
+    gulp.task('dist', ['dist:connect', 'dist:sass', 'dist:browserify'], () => {
+      gulp.watch('./src/components/**/*.*', ['dist:browserify']);
+      gulp.watch('./src/index.js', ['dist:browserify']);
+      gulp.watch('./src/index.scss', ['dist:sass']);
+    });
