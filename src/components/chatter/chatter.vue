@@ -3,13 +3,11 @@
 
     <div class="row mb-2">
       <div class="col-12 output">
-        <div class="load-overlay">
+        <div class="load-overlay" :class="{ active: loading }">
           <div class="loader"></div>
         </div>
 
-        <pre class="m-2">
-          {{ output }}
-        </pre>
+        <pre class="m-2">{{ output }}</pre>
       </div>
     </div>
 
