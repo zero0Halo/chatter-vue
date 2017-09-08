@@ -19,6 +19,15 @@ var minify = require('gulp-minify');
  *  All files are unminified, and include sourcemaps.
  */
 
+    // Copy the html file to dev
+    gulp.task('dev:html', function(){
+     var SRC = './src/index.html';
+
+     return gulp.src(SRC)
+       .pipe(gulp.dest('./dev'))
+       .pipe(connect.reload());
+    });
+
     // Convert es6 to es5, convert .vue files into useable code
     gulp.task('dev:browserify', function() {
       const BUNDLE = 'index-bundle.js';
@@ -59,7 +68,8 @@ var minify = require('gulp-minify');
     });
 
     // Default task for gulp is dev mode
-    gulp.task('default', ['dev:connect', 'dev:sass', 'dev:browserify'], () => {
+    gulp.task('default', ['dev:connect', 'dev:html', 'dev:sass', 'dev:browserify'], () => {
+      gulp.watch('./src/index.html', ['dev:html']);
       gulp.watch('./src/components/**/*.*', ['dev:browserify']);
       gulp.watch('./src/index.js', ['dev:browserify']);
       gulp.watch('./src/index.scss', ['dev:sass']);
@@ -75,6 +85,15 @@ var minify = require('gulp-minify');
  *  These files are minified and without sourcemaps.
  *  A server is spun up to view the project to verify there are no errors.
  */
+
+    // Copy the html file to dev
+    gulp.task('dist:html', function(){
+      var SRC = './src/index.html';
+
+      return gulp.src(SRC)
+        .pipe(gulp.dest('./dist'))
+        .pipe(connect.reload());
+    });
 
     // Convert es6 to es5, convert .vue files into useable code
     gulp.task('dist:browserify', function() {
@@ -95,7 +114,6 @@ var minify = require('gulp-minify');
         .pipe(connect.reload())
     });
 
-
     // Convert sass to css
     gulp.task('dist:sass', function () {
       var SRC = './src/index.scss';
@@ -108,7 +126,6 @@ var minify = require('gulp-minify');
         .pipe(connect.reload());
     });
 
-
     // Start a server pointing at the dist folder
     gulp.task('dist:connect', function() {
       connect.server({
@@ -118,7 +135,8 @@ var minify = require('gulp-minify');
     });
 
     // Watch for changes and update the dist files
-    gulp.task('dist', ['dist:connect', 'dist:sass', 'dist:browserify'], () => {
+    gulp.task('dist', ['dist:connect', 'dist:html', 'dist:sass', 'dist:browserify'], () => {
+      gulp.watch('./src/index.html', ['dist:html']);
       gulp.watch('./src/components/**/*.*', ['dist:browserify']);
       gulp.watch('./src/index.js', ['dist:browserify']);
       gulp.watch('./src/index.scss', ['dist:sass']);
