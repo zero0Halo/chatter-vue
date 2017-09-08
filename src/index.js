@@ -1,15 +1,10 @@
-var Vue = require('vue');
-var chatter = require('./components/chatter/chatter.vue');
+const Vue = require('vue');
+const chatter = require('./components/chatter/chatter.vue');
 
-
-
-
-new Vue({
+// Create a new instance of Vue with the custom component
+let app = new Vue({
   el: '#app',
   components: {
     chatter
-  },
-  data: {
-    message: 'Hi'
   }
 });

@@ -23,8 +23,10 @@ export default {
 
   methods: {
 
-
-    textSubmit() {
+    /**
+     * [textSubmit Submits user text for value parsing and assigning results]
+     */
+     textSubmit() {
 
       // Make sure there is something in the input field
       if(this.message.length > 0){
@@ -41,63 +43,72 @@ export default {
     },
 
 
-    parseMessage(){
-      let promises = [];
-      let result;
+    /**
+     * [parseValue Parses the submitted value against regex's for mentions, emoticons and urls]
+     * @param  {[string]} value [The value from the text input]
+     * @return {[promise]}       [A resolved promise]
+     */
+      parseMessage(){
+        let promises = [];
+        let result;
 
-      // Loop through any results that match the mentions regex and push them to results
-      while( (result = this.mentionExpr.exec(this.message)) !== null ){
-        this.results.mentions.push(result[1]);
-      }
-
-      // Loop through any results that match the emoticons regex and push them to results
-      while( (result = this.emoticonExpr.exec(this.message)) !== null ){
-
-        // Emoticons of only a certain length are allowed
-        if(result[1].length <= this.emoticonLimit){
-          this.results.emoticons.push(result[1]);
+        // Loop through any results that match the mentions regex and push them to results
+        while( (result = this.mentionExpr.exec(this.message)) !== null ){
+          this.results.mentions.push(result[1]);
         }
-      }
 
-      // Loop through any results that match the url regex and push them to the promises array
-      while( (result = this.urlExpr.exec(this.message)) !== null ){
+        // Loop through any results that match the emoticons regex and push them to results
+        while( (result = this.emoticonExpr.exec(this.message)) !== null ){
 
-        // Calls the _getTitle helper method and passes it the result. This is a promise.
-        promises.push( this._getTitle(result[1]) );
-      }
+          // Emoticons of only a certain length are allowed
+          if(result[1].length <= this.emoticonLimit){
+            this.results.emoticons.push(result[1]);
+          }
+        }
 
-      // If there are promsies, that means that the response is now asynchronous.
-      // To account for if there are no promises in the promises array, this promise is immediately resolved.
-      return new Promise( (resolve, reject) =>{
-        if(promises.length > 0){
+        // Loop through any results that match the url regex and push them to the promises array
+        while( (result = this.urlExpr.exec(this.message)) !== null ){
 
-          // Show the loading spinner since it'll take a second or two to get the respone(s)
-          this.loading = true;
+          // Calls the _getTitle helper method and passes it the result. This is a promise.
+          promises.push( this._getTitle(result[1]) );
+        }
 
-          // There could be multiple urls/promises, so have to wait for them to all be resolved.
-          // Once done, assign the result of the promises to the results and resolve.
-          Promise.all(promises).then( values => {
+        // If there are promsies, that means that the response is now asynchronous.
+        // To account for if there are no promises in the promises array, this promise is immediately resolved.
+        return new Promise( (resolve, reject) =>{
+          if(promises.length > 0){
 
-            // It's possible that an invalid url was given.
-            // The project wasn't specific as to what should happen in this case, so I went ahead and noted some error detection.
-            values.map( v => {
-              if(v.hasOwnProperty('error')) {
-                console.error('There was an error with a url submitted to getTitle: ', v.error);
-              }
+            // Show the loading spinner since it'll take a second or two to get the respone(s)
+            this.loading = true;
+
+            // There could be multiple urls/promises, so have to wait for them to all be resolved.
+            // Once done, assign the result of the promises to the results and resolve.
+            Promise.all(promises).then( values => {
+
+              // It's possible that an invalid url was given.
+              // The project wasn't specific as to what should happen in this case, so I went ahead and noted some error detection.
+              values.map( v => {
+                if(v.hasOwnProperty('error')) {
+                  console.error('There was an error with a url submitted to getTitle: ', v.error);
+                }
+              });
+
+              this.results.links = values;
+              this.loading = false;
+              resolve();
             });
-
-            this.results.links = values;
-            this.loading = false;
+          } else {
             resolve();
-          });
-        } else {
-          resolve();
-        }
-      });
-    },
+          }
+        });
+      },
 
 
-    _resultConstructor() {
+    /**
+     * [_resultConstructor Helper method. Returns an object that is the format for the results]
+     * @return {[obj]} [^]
+     */
+     _resultConstructor() {
       return {
         mentions: [],
         emoticons: [],
@@ -106,7 +117,12 @@ export default {
     },
 
 
-    _getTitle(url) {
+    /**
+     * [_getTitle Helper method. Uses jquery post method to call a webtask I created to get a website's title]
+     * @param  {[string]} url [A website url]
+     * @return {[promise]}     [A resolved promise with the data returned from the webtask]
+     */
+     _getTitle(url) {
       return new Promise( (resolve, reject) => {
         $.post({
           url: this.webtask,

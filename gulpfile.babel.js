@@ -86,7 +86,7 @@ var minify = require('gulp-minify');
  *  A server is spun up to view the project to verify there are no errors.
  */
 
-    // Copy the html file to dev
+    // Copy the html file to dist
     gulp.task('dist:html', function(){
       var SRC = './src/index.html';
 
