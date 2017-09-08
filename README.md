@@ -24,4 +24,4 @@ The original source code for the project can be found in the `src` folder. There
 
 * **webtask.io**: I recently had the opportunity to start using webtasks, and I find them very useful. In this case, I wrote a webtask specifically for this project that would return the title of a page based on a given URL. I included the code for [the task](https://github.com/zero0Halo/hipchat-code-test/blob/master/getTitle.webtask.js) in this repo.
 
-* **Vue**: Vue is a component based framework with similarities to React. As I have more experience with Vue, I decided to use it rather than React.
+* **Vue**: Vue is a component based framework with similarities to React. As I have more experience with Vue, I decided to use it instead.
