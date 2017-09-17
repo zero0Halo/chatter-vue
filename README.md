@@ -1,8 +1,8 @@
-# hipchat-vue
+# chatter-vue
 
 ## Introduction
 
-This project is based on [hipchat-code-test](https://github.com/zero0Halo/hipchat-code-test), with the major exception being that it is written in Vue.js to make it more modular.
+A project exploring the use of Vue.js and webtask.io.
 
 ## Setup
 
