@@ -135,9 +135,9 @@ var minify = require('gulp-minify');
     });
 
     // Watch for changes and update the dist files
-    gulp.task('dist', ['dist:connect', 'dist:html', 'dist:sass', 'dist:browserify'], () => {
-      gulp.watch('./src/index.html', ['dist:html']);
-      gulp.watch('./src/components/**/*.*', ['dist:browserify']);
-      gulp.watch('./src/index.js', ['dist:browserify']);
-      gulp.watch('./src/index.scss', ['dist:sass']);
+    gulp.task('dist', ['dist:html', 'dist:sass', 'dist:browserify'], () => {
+      // gulp.watch('./src/index.html', ['dist:html']);
+      // gulp.watch('./src/components/**/*.*', ['dist:browserify']);
+      // gulp.watch('./src/index.js', ['dist:browserify']);
+      // gulp.watch('./src/index.scss', ['dist:sass']);
     });
