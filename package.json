@@ -4,7 +4,9 @@
   "description": "A code test for Hipchat that utilizes the Vue framework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "gulp",
+    "build": "gulp dist"
   },
   "author": "Steve Swanson",
   "license": "ISC",
